@@ -1,0 +1,82 @@
+<html ng-app="listaTelefonica">
+<head>
+	<meta charset="UTF-8">
+	<title>Lista Telefonica</title>
+	<link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
+	<style>
+		.jumbotron {
+			width: 400px;
+			text-align: center;
+			margin-top: 20px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.table {
+			margin-top: 20px;
+		}
+		.form-control {
+			margin-bottom: 5px;
+		}
+		.selecionado {
+			background-color: yellow;
+		}
+		.negrito {
+			font-weight: bold;
+		}
+	</style>
+	<script src="lib/angular/angular.js"></script>
+	<script src="lib/angular/angular-messages.js"></script>
+	<script src="app.js"></script>
+	<script src="meuFiltro.js"></script>
+	<script src="request.service.js"></script>
+</head>
+<body ng-controller="listaTelefonicaCtrl as Ctrl">
+	<div class="jumbotron">
+		<h3>{{Ctrl.app}}</h3>
+		<input class="form-control" type="text"placeholder="Pesquisa de Contatos" ng-model="Ctrl.filtro"/>
+		<table class="table">
+			<tr>
+				<th></th>
+				<th>Nome</th>
+				<th>Telefone</th>
+				<th>Operadora</th>
+				<th></th>
+			</tr>
+			<tr ng-repeat="item in Ctrl.teste | filter: {nome:Ctrl.filtro} | limitTo: 20 track by $index">
+				<td><input class="checkbox"ng-model="item.selecionar" type="checkbox"/></td>
+				<td>{{item.nome | meuFiltro}}</td>
+				<td><div ng-if="item.selecionar">Selecionado</div>
+					{{item.telefone}}
+				</td>
+				<td>{{item.operadora.nome}}</td>
+				<td><button class="btn-primary" ng-click="Ctrl.DeleteContato(item, Ctrl.teste)">X</button></td>
+			</tr>
+		</table>
+		<hr/>
+		<form name="mainForm" class="formmain">
+
+                <input name="nome" class="form-control" type="text" placeholder="Nome" ng-model="Ctrl.contato.nome" ng-minlength="2" ng-maxlength="20" required/>
+                <input name="telefone" class="form-control" type="text"placeholder="Telefone" ng-model="Ctrl.contato.telefone" ng-minlength="8" ng-maxlength="20" required/>
+                <select class="form-control" ng-model="Ctrl.contato.operadora" ng-options="operadora.nome for operadora in Ctrl.operadoras">
+                	<option value="">Selecione uma operadora</option>
+                </select>
+                <button class="btn btn-primary btn-block" ng-click="Ctrl.AddContato(Ctrl.contato)" ng-disabled="mainForm.nome.$error.required">Adicionar Contato</button>
+				<button class="btn btn-danger btn-block" ng-click="Ctrl.RemoverTudo(Ctrl.teste)" ng-disabled="Ctrl.mostrarApagar(Ctrl.teste)">Apagar Contatos</button>
+
+				<div ng-messages="mainForm.nome.$error" ng-if="mainForm.nome.$touched">
+					<p ng-message="minlength">Field is too short.</p>
+				    <p ng-message="maxlength">Field is too long.</p>
+				    <p ng-message="required">Field required.</p>
+				</div>
+
+				<div ng-show="mainForm.$dirty">
+					<p ng-show="mainForm.$invalid">Form inválido</p>
+				</div>
+        </form>
+		
+	</div>
+        
+        <!--<div ng-include="'https://raw.githubusercontent.com/dhiegoatencio/treinamento/master/messages.html'"></div> -->
+</body>
+</html>
+
